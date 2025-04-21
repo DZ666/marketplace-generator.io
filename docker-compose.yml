@@ -1,0 +1,137 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP порт
+      - "15672:15672" # Management UI порт
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth:
+    build:
+      context: ./src/auth
+      dockerfile: Dockerfile
+    ports:
+      - "${AUTH_PORT:-4000}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - NPM_FLAGS=--legacy-peer-deps
+    volumes:
+      - ./src/auth:/app
+      - ./src/scripts:/scripts
+      - /app/node_modules
+    command: npm run dev
+    env_file:
+      - .env
+      - .env.dev
+      - .env.prod
+      - .env.test
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  user:
+    build:
+      context: ./src/user
+      dockerfile: Dockerfile
+    ports:
+      - "${USER_PORT:-4001}:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - NPM_FLAGS=--legacy-peer-deps
+    volumes:
+      - ./src/user:/app
+      - ./src/scripts:/scripts
+      - /app/node_modules
+    command: npm run dev
+    env_file:
+      - .env
+      - .env.dev
+      - .env.prod
+      - .env.test
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  product:
+    build:
+      context: ./src/product
+      dockerfile: Dockerfile
+    ports:
+      - "${PRODUCT_PORT:-4002}:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - NPM_FLAGS=--legacy-peer-deps
+    volumes:
+      - ./src/product:/app
+      - ./src/scripts:/scripts
+      - /app/node_modules
+    command: npm run dev
+    env_file:
+      - .env
+      - .env.dev
+      - .env.prod
+      - .env.test
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  order:
+    build:
+      context: ./src/order
+      dockerfile: Dockerfile
+    ports:
+      - "${ORDER_PORT:-4003}:3003"
+    environment:
+      - PORT=3003
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - NPM_FLAGS=--legacy-peer-deps
+    volumes:
+      - ./src/order:/app
+      - ./src/scripts:/scripts
+      - /app/node_modules
+    command: npm run dev
+    env_file:
+      - .env
+      - .env.dev
+      - .env.prod
+      - .env.test
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  env-test:
+    build:
+      context: .
+      dockerfile: src/env-test/Dockerfile
+    environment:
+      - NODE_ENV=test
+      - PORT=4321
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  rabbitmq_data:
