@@ -20,10 +20,11 @@ export const environmentSchema = Joi.object({
   RABBITMQ_HOST: Joi.string().default('rabbitmq'),
   RABBITMQ_PORT: Joi.number().default(5672),
 
-  // Database (for future use)
+  // Database (PostgreSQL)
   DATABASE_HOST: Joi.string().default('localhost'),
   DATABASE_PORT: Joi.number().default(5432),
   DATABASE_USER: Joi.string().default('postgres'),
   DATABASE_PASSWORD: Joi.string().default('postgres'),
   DATABASE_NAME: Joi.string().default('marketplace'),
+  DATABASE_URL: Joi.string().uri().optional(), // для подключения по ссылке
 }); 

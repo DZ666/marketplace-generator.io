@@ -15,7 +15,10 @@ describe('Environment Module Integration', () => {
 
   beforeEach(async () => {
     // Устанавливаем переменные окружения для теста
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+    });
     process.env.PORT = '3000';
     process.env.RABBITMQ_URL = 'amqp://test:test@localhost:5672';
 
@@ -28,7 +31,10 @@ describe('Environment Module Integration', () => {
 
   afterEach(() => {
     // Очищаем переменные окружения после теста
-    delete process.env.NODE_ENV;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: undefined,
+      writable: true,
+    });
     delete process.env.PORT;
     delete process.env.RABBITMQ_URL;
   });

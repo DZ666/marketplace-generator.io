@@ -14,9 +14,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   
   // Подключаем микросервис RabbitMQ
-  app.connectMicroservice<MicroserviceOptions>(
+  app.connectMicroservice(
     createRmqMicroserviceOptions(
-      configService,
+      configService as any,
       USER_SERVICE_QUEUE,
       USER_SERVICE_EXCHANGE
     )

@@ -2,7 +2,7 @@ import { Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
 export function createRmqMicroserviceOptions(
-  configService: ConfigService,
+  configService: ConfigService<Record<string, unknown>, false>,
   queueName: string,
   exchangeName: string
 ) {
@@ -14,12 +14,6 @@ export function createRmqMicroserviceOptions(
       queueOptions: {
         durable: true,
       },
-      exchanges: [
-        {
-          name: exchangeName,
-          type: 'topic',
-        },
-      ],
     },
   };
 } 

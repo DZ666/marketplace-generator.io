@@ -9,4 +9,7 @@ export * from './microservice.config';
 
 // Constants
 export * from './constants/rabbit-mq.constants';
-export * from './constants/service.constants'; 
+export * from './constants/service.constants';
+
+// Postgres
+export * from './postgres.module'; 

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { USER_SERVICE_EXCHANGE, USER_CREATED_PATTERN, USER_UPDATED_PATTERN } from '../../constants/rabbit-mq.constants';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RabbitMQService {

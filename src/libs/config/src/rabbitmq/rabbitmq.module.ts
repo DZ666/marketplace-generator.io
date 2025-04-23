@@ -25,12 +25,6 @@ export class RabbitMQModule {
                 queueOptions: {
                   durable: true,
                 },
-                exchanges: [
-                  {
-                    name: exchangeName,
-                    type: 'topic',
-                  },
-                ],
               },
             }),
             inject: [ConfigService],

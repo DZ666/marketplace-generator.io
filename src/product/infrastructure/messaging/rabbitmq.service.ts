@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
@@ -17,7 +18,7 @@ export class RabbitMQService {
     );
   }
 
-  async publishProductUpdated(product: any) {
+  async publishProductUpdated(product) {
     return this.client.emit(
       { exchange: PRODUCT_SERVICE_EXCHANGE, routingKey: PRODUCT_UPDATED_PATTERN },
       product

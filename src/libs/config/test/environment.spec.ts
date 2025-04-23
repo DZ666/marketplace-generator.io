@@ -48,7 +48,10 @@ describe('Environment Module', () => {
 
   describe('загрузка .env файлов', () => {
     it('должен загружать переменные из .env.dev в development режиме', async () => {
-      process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+    });
       
       const moduleRef = await Test.createTestingModule({
         imports: [

@@ -1,22 +1,42 @@
 FROM node:20-alpine
 
+# Установка необходимых зависимостей для Prisma
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
-# Создаем package.json если он еще не существует
-COPY package.json ./
+# Копируем package.json основного сервиса
+COPY src/user/package.json ./
 
-# Установка зависимостей
-RUN npm cache clean --force
-RUN npm install
+# Копируем корневой package.json и локальную библиотеку config
+COPY package.json /workspace/package.json
+COPY src/libs/config /workspace/src/libs/config
+
+# Устанавливаем зависимости и билдим локальную либу
+RUN cd /workspace/src/libs/config && npm install && npm run build
+
+# Устанавливаем общие зависимости в /workspace
+RUN cd /workspace && npm install @nestjs/common @nestjs/core @nestjs/config @nestjs/microservices --legacy-peer-deps
+
+# Устанавливаем зависимости основного сервиса
+RUN npm install --legacy-peer-deps && \
+    npm install @nestjs/config @nestjs/microservices bcrypt --legacy-peer-deps
 
 # Копируем исходный код
-COPY . .
+COPY src/user ./
 
-# Для разработки - пропускаем этап сборки, т.к. будем использовать ts-node
-# Компиляция TypeScript в JavaScript только для продакшн
-RUN if [ "$NODE_ENV" != "development" ]; then npm run build; fi
+# Заменяем установленный пакет @marketplace/config на симлинк
+RUN rm -rf /app/node_modules/@marketplace/config && \
+    mkdir -p /app/node_modules/@marketplace && \
+    ln -s /workspace/src/libs/config/dist /app/node_modules/@marketplace/config
+
+# Компиляция TypeScript в JavaScript
+RUN npm run build
 
 EXPOSE 3001
 
-# Настраиваем переменную CMD на основе окружения
-CMD [ "npm", "run", "start" ]
+# Запуск скрипта, который подготовит конфигурацию перед стартом
+COPY src/user/startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+CMD [ "/startup.sh" ]

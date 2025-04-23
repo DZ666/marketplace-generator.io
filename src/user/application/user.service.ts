@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class UserService {
   private users = [
-    { id: 1, name: 'User 1', email: 'user1@example.com' },
-    { id: 2, name: 'User 2', email: 'user2@example.com' },
+    { id: 1, name: 'User 1', email: 'user1@example.com', password: 'password1' },
+    { id: 2, name: 'User 2', email: 'user2@example.com', password: 'password2' },
   ];
 
   getUsers() {
@@ -15,6 +15,10 @@ export class UserService {
 
   getUserById(id: number) {
     return this.users.find(user => user.id === id);
+  }
+
+  getUserByEmail(email: string) {
+    return this.users.find(user => user.email === email);
   }
 
   createUser(createUserDto: any) {

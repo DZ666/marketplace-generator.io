@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions } from '@nestjs/microservices';
+import { MicroserviceOptions, RmqOptions } from '@nestjs/microservices';
 import { AuthModule } from './presentation/auth.module';
 import { 
   AUTH_SERVICE_EXCHANGE, 
@@ -8,18 +8,33 @@ import {
   DEFAULT_AUTH_PORT
 } from '@marketplace/config';
 import { ConfigService } from '@nestjs/config';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
   const configService = app.get(ConfigService);
   
   // Подключаем микросервис RabbitMQ
-  app.connectMicroservice<MicroserviceOptions>(
+  app.connectMicroservice(
     createRmqMicroserviceOptions(
-      configService,
+      configService as any,
       AUTH_SERVICE_QUEUE,
       AUTH_SERVICE_EXCHANGE
     )
+  );
+
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || 'supersecret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24, // 1 день
+        sameSite: 'lax',
+      },
+    }),
   );
 
   // Запускаем микросервис

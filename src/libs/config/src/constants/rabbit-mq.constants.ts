@@ -26,4 +26,7 @@ export const USER_UPDATED_PATTERN = 'user_updated';
 export const PRODUCT_CREATED_PATTERN = 'product_created';
 export const PRODUCT_UPDATED_PATTERN = 'product_updated';
 export const ORDER_CREATED_PATTERN = 'order_created';
-export const ORDER_UPDATED_PATTERN = 'order_updated'; 
+export const ORDER_UPDATED_PATTERN = 'order_updated'; export const PAYMENT_SERVICE_QUEUE = 'payment.queue';
+export const PAYMENT_SERVICE_EXCHANGE = 'payment.exchange';
+export const ANALYTICS_SERVICE_QUEUE = 'analytics.queue';
+export const ANALYTICS_SERVICE_EXCHANGE = 'analytics.exchange';

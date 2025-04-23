@@ -15,12 +15,6 @@ import { AUTH_SERVICE_EXCHANGE } from '../../constants/rabbit-mq.constants';
           queueOptions: {
             durable: true,
           },
-          exchanges: [
-            {
-              name: AUTH_SERVICE_EXCHANGE,
-              type: 'topic',
-            },
-          ],
         },
       },
     ]),
